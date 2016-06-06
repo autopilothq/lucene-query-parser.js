@@ -25,7 +25,7 @@ define(["../lib/lucene-query-parser.js"], function(lucenequeryparser) {
 
     function isEmpty(arr)
     {
-        for(var i in arr)
+        for (var i in arr)
         {
             return false;
         }
@@ -39,13 +39,40 @@ describe("lucenequeryparser: term parsing", function() {
     it("parses terms", function() {
         var results = lucenequeryparser.parse('bar');
 
-        expect(results['left']['term']).toBe('bar');
+      expect(results['left']['term']).toBe('bar');
     });
 
     it("parses quoted terms", function() {
         var results = lucenequeryparser.parse('"fizz buzz"');
 
         expect(results['left']['term']).toBe('fizz buzz');
+    });
+
+
+    it("parses terms with +", function() {
+        var results = lucenequeryparser.parse('fizz+buzz');
+
+        expect(results['left']['term']).toBe('fizz+buzz');
+    });
+
+    it("parses terms with -", function() {
+        var results = lucenequeryparser.parse('fizz-buzz');
+
+        expect(results['left']['term']).toBe('fizz-buzz');
+    });
+
+    it("parses term with regular expression", function() {
+        var results = lucenequeryparser.parse('/bar/');
+
+        expect(results['left']['term']).toBe('bar');
+        expect(results['left']['regexpr']).toBe(true);
+    });
+
+    it("parses term with regular expression containing /", function() {
+        var results = lucenequeryparser.parse('/fizz\\/buzz/');
+
+        expect(results['left']['term']).toBe('fizz/buzz');
+        expect(results['left']['regexpr']).toBe(true);
     });
 
     it("accepts terms with '-'", function() {
@@ -214,6 +241,14 @@ describe("lucenequeryparser: conjunction operators", function() {
 
         expect(results['left']['term']).toBe('fizz');
         expect(results['operator']).toBe('OR');
+        expect(results['right']['term']).toBe('buzz');
+    });
+
+    it("parses explicit conjunction operator (!)", function() {
+        var results = lucenequeryparser.parse('fizz ! buzz');
+
+        expect(results['left']['term']).toBe('fizz');
+        expect(results['operator']).toBe('NOT');
         expect(results['right']['term']).toBe('buzz');
     });
 });
@@ -435,7 +470,6 @@ describe("lucenequeryparser: Lucene Query syntax documentation examples", functi
         expect(results['operator']).toBe('<implicit>');
         expect(results['right']['field']).toBe('<implicit>');
         expect(results['right']['term']).toBe('Apache Lucene');
-
     });
 
     it('parses example: "jakarta apache" jakarta', function() {
