@@ -114,24 +114,20 @@ node
     }
   / left:group_exp operator:operator_exp* right:node*
     {
-        var node= {
-            left:left
-            };
+      if (right.length === 0 && operator.length === 0) {
+        return left;
+      }
 
-        var right =
-                right.length == 0
-                ? null
-                : right[0]right. == null
-                    ? right[0].left
-                    : right[0];
+      var node = {
+        left: left,
+        operator: operator.length ? operator[0] :  '<implicit>',
+      };
 
-        if (right != null)
-        {
-            node.operator = operator=='' || operator==undefined? '<implicit>' : operator[0];
-            node.right = right;
-        }
+      if (right.length) {
+        node.right = right[0].right === null ? right[0].left : right[0];
+      }
 
-        return node;
+      return node;
     }
 
 group_exp
