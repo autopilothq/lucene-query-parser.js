@@ -274,7 +274,7 @@ range_operator_exp
             term_max: term_max,
             inclusive: true,
             inclusive_min: true,
-            inclusive_max: true
+            inclusive_max: true,
         };
     }
   / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
@@ -284,7 +284,7 @@ range_operator_exp
             term_max: term_max,
             inclusive: false,
             inclusive_min: false,
-            inclusive_max: false
+            inclusive_max: false,
         };
     }
   / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term ']'
@@ -294,7 +294,7 @@ range_operator_exp
             term_max: term_max,
             inclusive: false,
             inclusive_min: false,
-            inclusive_max: true
+            inclusive_max: true,
         };
     }
   / '[' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
@@ -304,7 +304,7 @@ range_operator_exp
             term_max: term_max,
             inclusive: false,
             inclusive_min: true,
-            inclusive_max: false
+            inclusive_max: false,
         };
     }
 
