@@ -44,6 +44,13 @@ describe("lucenequeryparser: term parsing", function() {
       expect(results.unquoted).toBe(true);
     });
 
+    it("parses terms that begin with //", function() {
+        var results = lucenequeryparser.parse('\\/\\/bar');
+
+      expect(results.term).toBe('\\/\\/bar');
+      expect(results.unquoted).toBe(true);
+    });
+
     it("parses quoted terms", function() {
       var results = lucenequeryparser.parse('"fizz buzz"');
 
@@ -77,6 +84,14 @@ describe("lucenequeryparser: term parsing", function() {
         expect(results.term).toBe('fizz/buzz');
         expect(results.regexpr).toBe(true);
     });
+
+    it("parses term with regular expression that begins with //", function() {
+        var results = lucenequeryparser.parse('url_match:/\\/\\/example.com\\/products\\/example.html/');
+
+        expect(results.term).toBe('//example.com/products/example.html');
+        expect(results.regexpr).toBe(true);
+    });
+
 
     it("accepts terms with '-'", function() {
         var results = lucenequeryparser.parse('created_at:>now-5d');
