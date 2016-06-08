@@ -22,32 +22,32 @@
  * A node expression generally has the following structure:
  *
  * {
- *     'left' : dictionary,     // field expression or node
- *     'operator': string,      // operator value
- *     'right': dictionary,     // field expression OR node
- *     'field': string          // field name (for field group syntax) [OPTIONAL]
+ *     left: dictionary,     // field expression or node
+ *     operator: string,      // operator value
+ *     right: dictionary,     // field expression OR node
+ *     field: string          // field name (for field group syntax) [OPTIONAL]
  * }
  *
  *
  * A field expression has the following structure:
  *
  * {
- *     'field': string,         // field name
- *     'term': string,          // term value
- *     'prefix': string         // prefix operator (+/-) [OPTIONAL]
- *     'boost': float           // boost value, (value > 1 must be integer) [OPTIONAL]
- *     'similarity': float      // similarity value, (value must be > 0 and < 1) [OPTIONAL]
- *     'proximity': integer     // proximity value [OPTIONAL]
+ *     field: string,         // field name
+ *     term: string,          // term value
+ *     prefix: string         // prefix operator (+/-) [OPTIONAL]
+ *     boost: float           // boost value, (value > 1 must be integer) [OPTIONAL]
+ *     similarity: float      // similarity value, (value must be > 0 and < 1) [OPTIONAL]
+ *     proximity: integer     // proximity value [OPTIONAL]
  * }
  *
  *
  * A range expression has the following structure:
  *
  * {
- *     'field': string,         // field name
- *     'term_min': string,      // minimum value (left side) of range
- *     'term_max': string,      // maximum value (right side) of range
- *     'inclusive': boolean     // inclusive ([...]) or exclusive ({...})
+ *     field: string,         // field name
+ *     term_min: string,      // minimum value (left side) of range
+ *     term_max: string,      // maximum value (right side) of range
+ *     inclusive: boolean     // inclusive ([...]) or exclusive ({...})
  * }
  *
  * Other Notes:
@@ -90,8 +90,8 @@ node
   = operator:operator_exp EOF
     {
         return {
-            'operator': operator
-            };
+          operator: operator
+        };
     }
   / operator:operator_exp right:node
     {
@@ -100,20 +100,20 @@ node
   / left:group_exp operator:operator_exp* right:node*
     {
         var node= {
-            'left':left
+            left:left
             };
 
         var right =
                 right.length == 0
                 ? null
-                : right[0]['right'] == null
-                    ? right[0]['left']
+                : right[0]right. == null
+                    ? right[0].left
                     : right[0];
 
         if (right != null)
         {
-            node['operator'] = operator=='' || operator==undefined? '<implicit>' : operator[0];
-            node['right'] = right;
+            node.operator = operator=='' || operator==undefined? '<implicit>' : operator[0];
+            node.right = right;
         }
 
         return node;
@@ -135,7 +135,7 @@ paren_exp
 field_exp
   = fieldname:fieldname? range:range_operator_exp
     {
-        range['field'] =
+        range.field =
             fieldname == '' || fieldname == undefined
                 ? "<implicit>"
                 : fieldname;
@@ -144,13 +144,13 @@ field_exp
     }
   / fieldname:fieldname node:paren_exp
     {
-        node['field']= fieldname;
+        node.field= fieldname;
         return node;
     }
   / fieldname:fieldname? term:term
     {
         var fieldexp = {
-            'field':
+            field:
                 fieldname == '' || fieldname == undefined
                     ? "<implicit>"
                     : fieldname
@@ -171,50 +171,50 @@ fieldname
 term
   = op:prefix_operator_exp? term:quoted_term proximity:proximity_modifier? boost:boost_modifier? _*
       {
-        var result = { 'term': term };
+        var result = { term: term };
 
         if('' != proximity)
         {
-            result['proximity'] = proximity;
+            result.proximity = proximity;
         }
         if('' != boost)
         {
-            result['boost'] = boost;
+            result.boost = boost;
         }
         if('' != op)
         {
-            result['prefix'] = op;
+            result.prefix = op;
         }
 
         return result;
     }
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
     {
-        var result = { 'term': term };
+        var result = { term: term };
         if('' != similarity)
         {
-            result['similarity'] = similarity;
+            result.similarity = similarity;
         }
         if('' != boost)
         {
-            result['boost'] = boost;
+            result.boost = boost;
         }
         if('' != op)
         {
-            result['prefix'] = op;
+            result.prefix = op;
         }
         return result;
     }
   / op:prefix_operator_exp? term:regexpr_term boost:boost_modifier? _*
       {
-          var result = { 'term': term, 'regexpr': true };
+          var result = { term: term, regexpr: true };
           if('' != boost)
           {
-              result['boost'] = boost;
+              result.boost = boost;
           }
           if('' != op)
           {
-              result['prefix'] = op;
+              result.prefix = op;
           }
           return result;
       }
@@ -285,41 +285,41 @@ range_operator_exp
   = '[' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term ']'
     {
         return {
-            'term_min': term_min,
-            'term_max': term_max,
-            'inclusive': true,
-            'inclusive_min': true,
-            'inclusive_max': true
+            term_min: term_min,
+            term_max: term_max,
+            inclusive: true,
+            inclusive_min: true,
+            inclusive_max: true
         };
     }
   / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
     {
         return {
-            'term_min': term_min,
-            'term_max': term_max,
-            'inclusive': false,
-            'inclusive_min': false,
-            'inclusive_max': false
+            term_min: term_min,
+            term_max: term_max,
+            inclusive: false,
+            inclusive_min: false,
+            inclusive_max: false
         };
     }
   / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term ']'
     {
         return {
-            'term_min': term_min,
-            'term_max': term_max,
-            'inclusive': false,
-            'inclusive_min': false,
-            'inclusive_max': true
+            term_min: term_min,
+            term_max: term_max,
+            inclusive: false,
+            inclusive_min: false,
+            inclusive_max: true
         };
     }
   / '[' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
     {
         return {
-            'term_min': term_min,
-            'term_max': term_max,
-            'inclusive': false,
-            'inclusive_min': true,
-            'inclusive_max': false
+            term_min: term_min,
+            term_max: term_max,
+            inclusive: false,
+            inclusive_min: true,
+            inclusive_max: false
         };
     }
 
