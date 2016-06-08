@@ -146,29 +146,25 @@ paren_exp
 field_exp
   = fieldname:fieldname? range:range_operator_exp
     {
-        range.field =
-            fieldname == '' || fieldname == undefined
-                ? "<implicit>"
-                : fieldname;
-
+        range.field = fieldname || "<implicit>";
         return range;
     }
   / fieldname:fieldname node:paren_exp
     {
-        node.field= fieldname;
+        node.field = fieldname;
         return node;
     }
   / fieldname:fieldname? term:term
     {
         var fieldexp = {
-            field:
-                fieldname == '' || fieldname == undefined
-                    ? "<implicit>"
-                    : fieldname
-            };
+          field: fieldname || "<implicit>"
+        };
 
-        for(var key in term)
+        for (var key in term) {
+          if (term.hasOwnProperty(key)) {
             fieldexp[key] = term[key];
+          }
+        }
 
         return fieldexp;
     }
