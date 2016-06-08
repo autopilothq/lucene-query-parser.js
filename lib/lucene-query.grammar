@@ -71,6 +71,21 @@
  *  To test the grammar, use the online parser generator at http://pegjs.majda.cz/online
  *
  */
+ {
+   function getTerm(term, options) {
+     options = options || {};
+
+     var result = { term: term };
+
+     for (var key in options) {
+       if (options.hasOwnProperty(key) && options[key]) {
+         result[key] = options[key];
+       }
+     }
+
+     return result;
+   }
+ }
 
 start
   = _* node:node+
@@ -171,53 +186,30 @@ fieldname
 term
   = op:prefix_operator_exp? term:quoted_term proximity:proximity_modifier? boost:boost_modifier? _*
       {
-        var result = { term: term };
-
-        if('' != proximity)
-        {
-            result.proximity = proximity;
-        }
-        if('' != boost)
-        {
-            result.boost = boost;
-        }
-        if('' != op)
-        {
-            result.prefix = op;
-        }
-
-        return result;
-    }
+        return getTerm(term, {
+          proximity: proximity,
+          boost: boost,
+          prefix: op,
+        });
+      }
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
-    {
-        var result = { term: term };
-        if('' != similarity)
-        {
-            result.similarity = similarity;
-        }
-        if('' != boost)
-        {
-            result.boost = boost;
-        }
-        if('' != op)
-        {
-            result.prefix = op;
-        }
-        return result;
-    }
+      {
+        return getTerm(term, {
+          similarity: similarity,
+          unquoted: true,
+          boost: boost,
+          prefix: op,
+        });
+      }
   / op:prefix_operator_exp? term:regexpr_term boost:boost_modifier? _*
       {
-          var result = { term: term, regexpr: true };
-          if('' != boost)
-          {
-              result.boost = boost;
-          }
-          if('' != op)
-          {
-              result.prefix = op;
-          }
-          return result;
+        return getTerm(term, {
+          boost: boost,
+          regexpr: true,
+          prefix: op,
+        });
       }
+
 unquoted_term
   = term_start:term_start_char term:$term_char*
     {
