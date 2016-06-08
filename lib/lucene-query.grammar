@@ -219,9 +219,9 @@ term
           return result;
       }
 unquoted_term
-  = term_start:term_start_char term:term_char*
+  = term_start:term_start_char term:$term_char*
     {
-        return term_start + term.join('');
+        return term_start + term;
     }
 
 term_start_char
@@ -231,9 +231,9 @@ term_char
   = '+' / '-' / term_start_char
 
 regexpr_term
-  = '/' term:regexpr_char+ '/'
+  = '/' term:$regexpr_char+ '/'
     {
-        return term.join('').replace('\\/', '/');
+        return term.replace('\\/', '/');
     }
 
 regexpr_char
@@ -242,9 +242,9 @@ regexpr_char
 
 
 quoted_term
-  = '"' term:[^"]+ '"'
+  = '"' term:$[^"]+ '"'
     {
-        return term.join('');
+        return term;
     }
 
 proximity_modifier
@@ -270,15 +270,15 @@ decimal_or_int_exp
  / int_exp
 
 decimal_exp
- = '0.' val:[0-9]+
+ = '0.' val:$[0-9]+
     {
-        return parseFloat("0." + val.join(''));
+        return parseFloat("0." + val);
     }
 
 int_exp
-  = val:[0-9]+
+  = val:$[0-9]+
     {
-        return parseInt(val.join(''));
+        return parseInt(val);
     }
 
 range_operator_exp
