@@ -217,15 +217,16 @@ unquoted_term
     }
 
 term_start_char
-  = '.' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
+  = '.' / '\\' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
 
 term_char
-  = '+' / '-' / term_start_char
+  = '+' / '-' / '/' / term_start_char
+
 
 regexpr_term
   = '/' term:$regexpr_char+ '/'
     {
-        return term.replace('\\/', '/');
+      return term.replace(/\\\//g, '/');
     }
 
 regexpr_char
