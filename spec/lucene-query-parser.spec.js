@@ -403,13 +403,12 @@ describe("lucenequeryparser: Lucene Query syntax documentation examples", functi
         expect(results.operator).toBe('<implicit>');
 
         var rightNode = results.right;
-
-        expect(rightNode['left'].field).toBe('<implicit>');
-        expect(rightNode['left'].term).toBe('it');
+        expect(rightNode.left.field).toBe('<implicit>');
+        expect(rightNode.left.term).toBe('it');
         expect(rightNode.operator).toBe('<implicit>');
 
-        expect(rightNode['right'].field).toBe('<implicit>');
-        expect(rightNode['right'].term).toBe('right');
+        expect(rightNode.right.field).toBe('<implicit>');
+        expect(rightNode.right.term).toBe('right');
     });
 
     it('parses example: te?t', function() {
