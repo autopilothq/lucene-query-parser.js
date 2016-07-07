@@ -320,12 +320,21 @@ describe("lucenequeryparser: range expressions", function() {
         expect(results.inclusive).toBe(false);
     });
 
-    it("parses range expression with -ve numbers: foo:{0 TO -20", function() {
+    it("parses range expression with -ve numbers: foo:{0 TO -20}", function() {
       var results = lucenequeryparser.parse('foo:{0 TO -20}');
 
       expect(results.field).toBe('foo');
       expect(results.term_min).toBe('0');
       expect(results.term_max).toBe('-20');
+      expect(results.inclusive).toBe(false);
+    });
+
+    it("parses range expression with -ve numbers: foo:{-20 TO 00}", function() {
+      var results = lucenequeryparser.parse('foo:{-20 TO 0}');
+
+      expect(results.field).toBe('foo');
+      expect(results.term_min).toBe('-20');
+      expect(results.term_max).toBe('0');
       expect(results.inclusive).toBe(false);
     });
 });
