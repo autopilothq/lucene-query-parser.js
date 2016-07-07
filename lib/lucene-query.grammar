@@ -205,7 +205,8 @@ term
 unquoted_term
   = term_start:term_start_char term:$term_char*
     {
-        return term_start + term;
+
+      return term_start + term;
     }
 
 term_start_char
@@ -250,24 +251,33 @@ fuzzy_modifier
         return fuzziness == '' || fuzziness == undefined ? 0.5 : fuzziness;
     }
 
+sign = '+' / '-'
+
 decimal_or_int_exp
  = decimal_exp
  / int_exp
 
 decimal_exp
- = '0.' val:$[0-9]+
+ = sign:$sign? '0.' val:$[0-9]+
     {
-        return parseFloat("0." + val);
+      if (!sign || sign === '+') {
+        sign = '';
+      }
+      return parseFloat(sign + "0." + val);
     }
 
 int_exp
-  = val:$[0-9]+
+  = sign:$sign? val:$[0-9]+
     {
-        return parseInt(val);
+      if (!sign || sign === '+') {
+        sign = '';
+      }
+      return parseInt(sign + val, 10);
     }
 
+
 range_operator_exp
-  = '[' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term ']'
+  = '[' term_min:range_term _* 'TO' _+ term_max:range_term ']'
     {
         return {
             term_min: term_min,
@@ -277,7 +287,7 @@ range_operator_exp
             inclusive_max: true,
         };
     }
-  / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
+  / '{' term_min:range_term _* 'TO' _+ term_max:range_term '}'
     {
         return {
             term_min: term_min,
@@ -287,7 +297,7 @@ range_operator_exp
             inclusive_max: false,
         };
     }
-  / '{' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term ']'
+  / '{' term_min:range_term _* 'TO' _+ term_max:range_term ']'
     {
         return {
             term_min: term_min,
@@ -297,7 +307,7 @@ range_operator_exp
             inclusive_max: true,
         };
     }
-  / '[' term_min:unquoted_term _* 'TO' _+ term_max:unquoted_term '}'
+  / '[' term_min:range_term _* 'TO' _+ term_max:range_term '}'
     {
         return {
             term_min: term_min,
@@ -307,6 +317,22 @@ range_operator_exp
             inclusive_max: false,
         };
     }
+
+range_term
+  = range_unquoted_term
+  / decimal_or_int_exp
+
+range_unquoted_term
+  = term_start:range_term_start_char term:$range_term_char*
+    {
+      return term_start + term;
+    }
+
+range_term_start_char
+  = '.' / '\\' / [^: \t\r\n\f\{\}()"/^~\[\]]
+
+range_term_char
+  = '/' / ':' / range_term_start_char
 
 operator_exp
   = _* operator:operator _+

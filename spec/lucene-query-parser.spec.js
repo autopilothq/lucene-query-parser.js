@@ -302,7 +302,7 @@ describe("lucenequeryparser: parentheses groups", function() {
 
 describe("lucenequeryparser: range expressions", function() {
 
-    it("parses inclusive range expression", function() {
+    it("parses inclusive range expression: foo:[bar TO baz]", function() {
         var results = lucenequeryparser.parse('foo:[bar TO baz]');
 
         expect(results.field).toBe('foo');
@@ -311,13 +311,22 @@ describe("lucenequeryparser: range expressions", function() {
         expect(results.inclusive).toBe(true);
     });
 
-    it("parses inclusive range expression", function() {
+    it("parses inclusive range expression: foo:{bar TO baz}", function() {
         var results = lucenequeryparser.parse('foo:{bar TO baz}');
 
         expect(results.field).toBe('foo');
         expect(results.term_min).toBe('bar');
         expect(results.term_max).toBe('baz');
         expect(results.inclusive).toBe(false);
+    });
+
+    it("parses range expression with -ve numbers: foo:{0 TO -20", function() {
+      var results = lucenequeryparser.parse('foo:{0 TO -20}');
+
+      expect(results.field).toBe('foo');
+      expect(results.term_min).toBe('0');
+      expect(results.term_max).toBe('-20');
+      expect(results.inclusive).toBe(false);
     });
 });
 
@@ -447,6 +456,57 @@ describe("lucenequeryparser: Lucene Query syntax documentation examples", functi
         expect(results.term_max).toBe('20030101');
         expect(results.inclusive).toBe(true);
     });
+
+    // From: https://wiki.apache.org/solr/SolrQuerySyntax
+    it('parses example: timestamp:[* TO NOW]', function() {
+        var results = lucenequeryparser.parse('timestamp:[* TO NOW]');
+
+        expect(results.field).toBe('timestamp');
+        expect(results.term_min).toBe('*');
+        expect(results.term_max).toBe('NOW');
+        expect(results.inclusive).toBe(true);
+    });
+
+    // From: https://wiki.apache.org/solr/SolrQuerySyntax
+    it('parses example: createdate:[1995-12-31T23:59:59.999Z TO 2007-03-06T00:00:00Z]', function() {
+        var results = lucenequeryparser.parse('createdate:[1995-12-31T23:59:59.999Z TO 2007-03-06T00:00:00Z]');
+
+        expect(results.field).toBe('createdate');
+        expect(results.term_min).toBe('1995-12-31T23:59:59.999Z');
+        expect(results.term_max).toBe('2007-03-06T00:00:00Z');
+        expect(results.inclusive).toBe(true);
+    });
+
+    // From: https://wiki.apache.org/solr/SolrQuerySyntax
+    it('parses example: pubdate:[NOW-1YEAR/DAY TO NOW/DAY+1DAY]', function() {
+        var results = lucenequeryparser.parse('pubdate:[NOW-1YEAR/DAY TO NOW/DAY+1DAY]');
+
+        expect(results.field).toBe('pubdate');
+        expect(results.term_min).toBe('NOW-1YEAR/DAY');
+        expect(results.term_max).toBe('NOW/DAY+1DAY');
+        expect(results.inclusive).toBe(true);
+    });
+
+    // From: https://wiki.apache.org/solr/SolrQuerySyntax
+    it('parses example: createdate:[1976-03-06T23:59:59.999Z TO 1976-03-06T23:59:59.999Z+1YEAR]', function() {
+        var results = lucenequeryparser.parse('createdate:[1976-03-06T23:59:59.999Z TO 1976-03-06T23:59:59.999Z+1YEAR]');
+
+        expect(results.field).toBe('createdate');
+        expect(results.term_min).toBe('1976-03-06T23:59:59.999Z');
+        expect(results.term_max).toBe('1976-03-06T23:59:59.999Z+1YEAR');
+        expect(results.inclusive).toBe(true);
+    });
+
+    // From: https://wiki.apache.org/solr/SolrQuerySyntax
+    it('parses example: createdate:[1976-03-06T23:59:59.999Z/YEAR TO 1976-03-06T23:59:59.999Z]', function() {
+        var results = lucenequeryparser.parse('createdate:[1976-03-06T23:59:59.999Z/YEAR TO 1976-03-06T23:59:59.999Z]');
+
+        expect(results.field).toBe('createdate');
+        expect(results.term_min).toBe('1976-03-06T23:59:59.999Z/YEAR');
+        expect(results.term_max).toBe('1976-03-06T23:59:59.999Z');
+        expect(results.inclusive).toBe(true);
+    });
+
 
     it('parses example: title:{Aida TO Carmen}', function() {
         var results = lucenequeryparser.parse('title:{Aida TO Carmen}');
