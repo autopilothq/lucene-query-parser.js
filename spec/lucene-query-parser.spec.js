@@ -38,15 +38,19 @@ describe("lucenequeryparser: term parsing", function() {
 
     // term parsing
     it("parses terms", function() {
-        var results = lucenequeryparser.parse('bar');
-
+      var results = lucenequeryparser.parse('bar');
       expect(results.term).toBe('bar');
       expect(results.unquoted).toBe(true);
     });
 
-    it("parses terms that begin with //", function() {
-        var results = lucenequeryparser.parse('\\/\\/bar');
+    it("parses terms with escaped whitespace", function() {
+      var results = lucenequeryparser.parse('\\ alternative\\ energy\\ ');
+      expect(results.term).toBe(' alternative energy ');
+      expect(results.unquoted).toBe(true);
+    });
 
+    it("parses terms that begin with //", function() {
+      var results = lucenequeryparser.parse('\\/\\/bar');
       expect(results.term).toBe('\\/\\/bar');
       expect(results.unquoted).toBe(true);
     });
