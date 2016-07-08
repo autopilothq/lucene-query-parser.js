@@ -205,15 +205,14 @@ term
 unquoted_term
   = term_start:term_start_char term:$term_char*
     {
-
-      return term_start + term;
+      return (term_start + term).replace(/\\ /g, ' ');
     }
 
 term_start_char
-  = '.' / '\\' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
+  = '.' / '\\ ' / '\\' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
 
 term_char
-  = '+' / '-' / '/' / term_start_char
+  = '+' / '\\ ' / '-' / '/' / term_start_char
 
 
 regexpr_term

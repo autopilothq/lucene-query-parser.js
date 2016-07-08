@@ -44,6 +44,13 @@ describe("lucenequeryparser: term parsing", function() {
       expect(results.unquoted).toBe(true);
     });
 
+    it("parses terms with escaped whitespace", function() {
+      var results = lucenequeryparser.parse('\\ alternative\\ energy\\ ');
+      console.log(results)
+      expect(results.term).toBe(' alternative energy ');
+      expect(results.unquoted).toBe(true);
+    });
+
     it("parses terms that begin with //", function() {
         var results = lucenequeryparser.parse('\\/\\/bar');
 
