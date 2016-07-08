@@ -49,9 +49,20 @@ describe("lucenequeryparser: term parsing", function() {
       expect(results.unquoted).toBe(true);
     });
 
+    var reservedChars = '+ - & && | || ! ( ) { } [ ] ^ " ~ * ? : \\ /'.split(' ');
+    reservedChars.forEach(function(reservedChar) {
+      it("parses terms with escaped reserved char: " + reservedChar, function() {
+        var results = lucenequeryparser.parse('alternative\\' + reservedChar  + 'energy');
+        console.log(reservedChar, results);
+        expect(results.term).toBe('alternative' + reservedChar + 'energy');
+        expect(results.unquoted).toBe(true);
+      });
+    });
+
     it("parses terms that begin with //", function() {
       var results = lucenequeryparser.parse('\\/\\/bar');
-      expect(results.term).toBe('\\/\\/bar');
+      console.log(results);
+      expect(results.term).toBe('\/\/bar');
       expect(results.unquoted).toBe(true);
     });
 
