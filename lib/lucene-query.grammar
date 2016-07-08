@@ -85,6 +85,12 @@
 
      return result;
    }
+
+   var escapedTerms = /\\(\s|\+|\-|&|\||!|\(|\)|\{|\}|\[|\]|\^|"|~|\*|\?|\:|\\|\/)/g;
+
+   function unescapeTerm(term) {
+     return term.replace(escapedTerms, '$1')
+   }
  }
 
 start
@@ -202,18 +208,25 @@ term
         });
       }
 
+
+
 unquoted_term
   = term_start:term_start_char term:$term_char*
     {
-      return (term_start + term).replace(/\\ /g, ' ');
+      return unescapeTerm(term_start + term);
     }
 
 term_start_char
-  = '.' / '\\ ' / '\\' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
+  = '.' / escaped_term_char / '\\' / [^: \t\r\n\f\{\}()"+-/^~\[\]]
 
 term_char
-  = '+' / '\\ ' / '-' / '/' / term_start_char
+  = escaped_term_char / '+' / '-' / '/' / term_start_char
 
+escaped_term_char
+  = '\\ ' / '\\+' / '\\-' / '\\&' / '\\|'
+  / '\\!' / '\\(' / '\\)' / '\\{'  / '\\}'
+  / '\\[' / '\\]' / '\\^' / '\\"'  / '\\~'
+  / '\\*' / '\\?' / '\\:' / '\\\\' / '\\/'
 
 regexpr_term
   = '/' term:$regexpr_char+ '/'
