@@ -89,15 +89,8 @@
    // Chars that should be escaped in unquoted terms
    var escapedUnquotedTermChars = /\\(\s|\+|\-|&|\||!|\(|\)|\{|\}|\[|\]|\^|"|~|\*|\?|\:|\\|\/)/g;
 
-   // Chars that should be escaped in RegExs
-   var escapedRegExChars = /\\(\s|\.|\$|\+|\-|&|\||!|\(|\)|\{|\}|\[|\]|\^|"|~|\*|\?|\:|\\|\/)/g;
-
    function unescapeTerm(term) {
      return term.replace(escapedUnquotedTermChars, '$1')
-   }
-
-   function unescapeRegExTerm(term) {
-     return term.replace(escapedRegExChars, '$1')
    }
  }
 
@@ -239,7 +232,7 @@ escaped_term_char
 regexpr_term
   = '/' term:$regexpr_char+ '/'
     {
-      return term; //unescapeTerm(term); //.replace(/\\\//g, '/');
+      return term;
     }
 
 regexpr_char
