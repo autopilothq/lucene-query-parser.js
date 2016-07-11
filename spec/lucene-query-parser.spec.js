@@ -66,11 +66,21 @@ describe("lucenequeryparser: term parsing", function() {
 
     it("parses quoted terms", function() {
       var results = lucenequeryparser.parse('"fizz buzz"');
-
       expect(results.term).toBe('fizz buzz');
       expect(results.unquoted).toBeUndefined();
     });
 
+    it("parses quoted terms that contain double quotes", function() {
+      var results = lucenequeryparser.parse('"fizz \\"buzz\\""');
+      expect(results.term).toBe('fizz "buzz"');
+      expect(results.unquoted).toBeUndefined();
+    });
+
+    it("parses empty quoted terms", function() {
+      var results = lucenequeryparser.parse('""');
+      expect(results.term).toBe('');
+      expect(results.unquoted).toBeUndefined();
+    });
 
     it("parses terms with +", function() {
         var results = lucenequeryparser.parse('fizz+buzz');
@@ -91,17 +101,26 @@ describe("lucenequeryparser: term parsing", function() {
         expect(results.regexpr).toBe(true);
     });
 
+    it("parses term with regular expression", function() {
+        var allTheThings = '[0-9a-zA-Z\\u00a1-\\uffff\\:\\-\\/\\_\\@\\.\\?#\\%\\+\\=\\&\\$\\*]*';
+        var results = lucenequeryparser.parse('industry_match:/' + allTheThings + 'foo' + allTheThings + '/');
+
+        expect(results.term).toBe(allTheThings + 'foo' + allTheThings);
+        expect(results.regexpr).toBe(true);
+    });
+
+
     it("parses term with regular expression containing /", function() {
         var results = lucenequeryparser.parse('/fizz\\/buzz/');
 
-        expect(results.term).toBe('fizz/buzz');
+        expect(results.term).toBe('fizz\\/buzz');
         expect(results.regexpr).toBe(true);
     });
 
     it("parses term with regular expression that begins with //", function() {
         var results = lucenequeryparser.parse('url_match:/\\/\\/example.com\\/products\\/example.html/');
 
-        expect(results.term).toBe('//example.com/products/example.html');
+        expect(results.term).toBe('\\/\\/example.com\\/products\\/example.html');
         expect(results.regexpr).toBe(true);
     });
 

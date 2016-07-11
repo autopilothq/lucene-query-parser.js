@@ -86,10 +86,11 @@
      return result;
    }
 
-   var escapedTerms = /\\(\s|\+|\-|&|\||!|\(|\)|\{|\}|\[|\]|\^|"|~|\*|\?|\:|\\|\/)/g;
+   // Chars that should be escaped in unquoted terms
+   var escapedUnquotedTermChars = /\\(\s|\+|\-|&|\||!|\(|\)|\{|\}|\[|\]|\^|"|~|\*|\?|\:|\\|\/)/g;
 
    function unescapeTerm(term) {
-     return term.replace(escapedTerms, '$1')
+     return term.replace(escapedUnquotedTermChars, '$1')
    }
  }
 
@@ -231,19 +232,21 @@ escaped_term_char
 regexpr_term
   = '/' term:$regexpr_char+ '/'
     {
-      return term.replace(/\\\//g, '/');
+      return term;
     }
 
 regexpr_char
   = '.' / '\\/' / [^/]
 
 
-
 quoted_term
-  = '"' term:$[^"]+ '"'
+  = '"' term:$quoted_char* '"'
     {
-        return term;
+        return term.replace(/\\"/g, '"');
     }
+
+quoted_char
+  = '\\"' / [^"]
 
 proximity_modifier
   = '~' proximity:int_exp
