@@ -249,46 +249,47 @@ quoted_char
   = '\\"' / [^"]
 
 proximity_modifier
-  = '~' proximity:int_exp
+  = '~' proximity:integer
     {
         return proximity;
     }
 
 boost_modifier
-  = '^' boost:decimal_or_int_exp
+  = '^' boost:number
     {
         return boost;
     }
 
 fuzzy_modifier
-  = '~' fuzziness:decimal_exp?
+  = '~' fuzziness:decimal?
     {
         return fuzziness == '' || fuzziness == undefined ? 0.5 : fuzziness;
     }
 
-sign = '+' / '-'
 
-decimal_or_int_exp
- = decimal_exp
- / int_exp
+number = integer / decimal
 
-decimal_exp
- = sign:$sign? '0.' val:$[0-9]+
-    {
-      if (!sign || sign === '+') {
-        sign = '';
-      }
-      return parseFloat(sign + "0." + val);
-    }
+decimal "decimal"
+  = integer fraction exponent? {
+    return parseFloat(text());
+  }
 
-int_exp
-  = sign:$sign? val:$[0-9]+
-    {
-      if (!sign || sign === '+') {
-        sign = '';
-      }
-      return parseInt(sign + val, 10);
-    }
+integer "integer"
+  = minus:minus? (zero / DIGIT1_9 DIGIT*) {
+    return parseInt(text(), 10);
+  }
+
+
+exponent      = e (minus / plus)? DIGIT+
+fraction      = decimal_point DIGIT+
+DIGIT1_9      = [1-9]
+DIGIT         = [0-9]
+sign          = plus / minus
+plus          = '+'
+minus         = '-'
+e             = [eE]
+decimal_point = "."
+zero = "0"
 
 
 range_operator_exp
@@ -335,7 +336,7 @@ range_operator_exp
 
 range_term
   = range_unquoted_term
-  / decimal_or_int_exp
+  / number
 
 range_unquoted_term
   = term_start:range_term_start_char term:$range_term_char*
