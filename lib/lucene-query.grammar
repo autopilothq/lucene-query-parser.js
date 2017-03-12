@@ -112,7 +112,7 @@ node
 
         if (right != null)
         {
-            node['operator'] = operator==''? '<implicit>' : operator[0];
+            node['operator'] = operator.length === 0 ? '<implicit>' : operator[0];
             node['right'] = right;
         }
 
@@ -135,10 +135,8 @@ paren_exp
 field_exp
   = fieldname:fieldname? range:range_operator_exp
     {
-        range['field'] =
-            fieldname == ''
-                ? "<implicit>"
-                : fieldname;
+      console.log("FIELD EXP 1", fieldname)
+        range['field'] = !fieldname ? "<implicit>" : fieldname;
 
         return range;
     }
@@ -149,11 +147,9 @@ field_exp
     }
   / fieldname:fieldname? term:term
     {
+      console.log("FIELD EXP 2", fieldname)
         var fieldexp = {
-            'field':
-                fieldname == ''
-                    ? "<implicit>"
-                    : fieldname
+              field: !fieldname ? "<implicit>" : fieldname
             };
 
         for(var key in term)
@@ -173,15 +169,15 @@ term
       {
         var result = { 'term': term };
 
-        if('' != proximity)
+        if(proximity)
         {
             result['proximity'] = proximity;
         }
-        if('' != boost)
+        if(boost)
         {
             result['boost'] = boost;
         }
-        if('' != op)
+        if(op)
         {
             result['prefix'] = op;
         }
@@ -191,15 +187,16 @@ term
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
     {
         var result = { 'term': term };
-        if('' != similarity)
+        console.log("FUZZY", similarity)
+        if(similarity)
         {
             result['similarity'] = similarity;
         }
-        if('' != boost)
+        if(boost)
         {
             result['boost'] = boost;
         }
-        if('' != op)
+        if(op)
         {
             result['prefix'] = op;
         }
@@ -236,7 +233,7 @@ boost_modifier
 fuzzy_modifier
   = '~' fuzziness:decimal_exp?
     {
-        return fuzziness == '' ? 0.5 : fuzziness;
+        return fuzziness == null ? 0.5 : fuzziness;
     }
 
 decimal_or_int_exp
