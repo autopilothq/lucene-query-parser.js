@@ -135,7 +135,6 @@ paren_exp
 field_exp
   = fieldname:fieldname? range:range_operator_exp
     {
-      console.log("FIELD EXP 1", fieldname)
         range['field'] = !fieldname ? "<implicit>" : fieldname;
 
         return range;
@@ -147,7 +146,6 @@ field_exp
     }
   / fieldname:fieldname? term:term
     {
-      console.log("FIELD EXP 2", fieldname)
         var fieldexp = {
               field: !fieldname ? "<implicit>" : fieldname
             };
@@ -187,7 +185,7 @@ term
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
     {
         var result = { 'term': term };
-        console.log("FUZZY", similarity)
+
         if(similarity)
         {
             result['similarity'] = similarity;
