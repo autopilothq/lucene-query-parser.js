@@ -1,0 +1,14 @@
+sudo: false
+language: node_js
+node_js:
+  - "0.10"
+  - "v7.4.0"
+
+before_install:
+  - if [ "$TRAVIS_NODE_VERSION" = "0.10" ]; then npm install -g npm@2; fi
+
+matrix:
+    fast_finish: true
+
+script:
+  - npm test

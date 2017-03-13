@@ -4,7 +4,7 @@
   "description": "Lucene Query Parser for Javascript created using PEG.js",
   "main": "lib/lucene-query-parser.js",
   "scripts": {
-    "build": "PEG_OUT=`cat lib/lucene-query.grammar | node_modules/pegjs/bin/pegjs` && printf \"if (typeof define !== 'function') { var define = require('amdefine')(module) };\n\ndefine([], function() { \nvar module = {};\n%s\nreturn module.exports;\n});\n\"  \"$PEG_OUT\" > ./lib/lucene-query-parser.js",
+    "build": "pegjs -o lib/lucene-query-parser.js lib/lucene-query.grammar",
     "test": "./node_modules/.bin/jasmine-node ./spec/ --verbose",
     "prepublish": "npm run-script build && npm test"
   },
@@ -38,7 +38,7 @@
     "amdefine": ">=0.0.2"
   },
   "devDependencies": {
-    "pegjs": "0.7.x",
+    "pegjs": "0.10.x",
     "jasmine-node": "1.10.x"
   }
 }
